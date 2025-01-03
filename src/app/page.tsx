@@ -1,3 +1,11 @@
-export default function Home() {
-   return <div className='text-3xl'>Hello</div>;
-}
+import HeroSection from '@/components/HeroSection';
+
+const Home = () => {
+   return (
+      <section>
+         <HeroSection />
+      </section>
+   );
+};
+
+export default Home;
