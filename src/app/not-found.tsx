@@ -1,31 +1,15 @@
-import * as React from 'react';
-
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
-import { MoveLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
-const NotFound = () => {
+export default function NotFound() {
    return (
-      <section className=' bg-green-100/20 min-h-screen flex items-center'>
-         <Card className='md:w-3/4 mx-auto border border-black'>
-            <CardHeader>
-               <CardTitle className='flex gap-3'>
-                  <span>
-                     <MoveLeft />
-                  </span>
-                  Page Not Found
-               </CardTitle>
-               <CardDescription>Oh Oh! You have entered wrong URL.</CardDescription>
-            </CardHeader>
-            <CardContent>
-               <Link href={'/'}>
-                  <Button className='bg-black text-white rounded-md hover:text-gray-700'>Go To Home Page</Button>
-               </Link>
-            </CardContent>
-         </Card>
-      </section>
+      <div className='flex flex-col items-center justify-center min-h-[100vh] px-4 text-center'>
+         <h1 className='text-6xl font-bold gradient-title mb-4 text-red-700'>404</h1>
+         <h2 className='text-2xl font-semibold mb-4'>Page Not Found</h2>
+         <p className='text-gray-600 mb-8'>Oops! The page you&apos;re looking for doesn&apos;t exist or has been moved.</p>
+         <Link href='/'>
+            <Button>Return Home</Button>
+         </Link>
+      </div>
    );
-};
-
-export default NotFound;
+}

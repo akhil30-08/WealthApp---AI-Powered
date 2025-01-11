@@ -23,9 +23,9 @@ const Header = () => {
                </SignInButton>
             </SignedOut>
             <SignedIn>
-               <div className='flex justify-start items-center'>
+               <div className='flex justify-start items-center gap-3'>
                   <Link href='/dashboard'>
-                     <Button>
+                     <Button variant={'secondary'}>
                         <LayoutDashboardIcon />
                         <span className='hidden md:inline'>Dashboard</span>
                      </Button>
