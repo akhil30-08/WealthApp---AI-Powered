@@ -91,7 +91,7 @@ const DrawerComponent = ({ children }: { children: React.ReactNode }) => {
 
                      <FormField
                         control={form.control}
-                        name='balance'
+                        name='type'
                         render={({ field }) => (
                            <FormItem>
                               <FormLabel>Account Type</FormLabel>
