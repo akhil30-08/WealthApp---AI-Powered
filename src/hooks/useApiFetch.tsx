@@ -1,17 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { toast } from 'sonner';
 
-export const useApiFetch = (url: string, options?: AxiosRequestConfig) => {
-   const [data, setData] = useState(null);
+export const useApiFetch = <T,>() => {
+   const [data, setData] = useState<T | null>(null);
    const [loading, setLoading] = useState<boolean>(false);
    const [error, setError] = useState<Error | null | AxiosError>(null);
 
-   const fetchAPI = async () => {
+   const fetchAPI = async (url: string, options?: AxiosRequestConfig) => {
       setLoading(true);
+      setError(null);
       try {
          const response = await axios(url, options);
          setData(response.data);
+         return response.data;
       } catch (error) {
          if (axios.isAxiosError(error)) {
             setError(error);
@@ -25,9 +27,5 @@ export const useApiFetch = (url: string, options?: AxiosRequestConfig) => {
       }
    };
 
-   useEffect(() => {
-      fetchAPI();
-   }, [url]);
-
-   return { data, loading, error };
+   return { data, loading, error, fetchAPI };
 };

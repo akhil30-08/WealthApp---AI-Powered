@@ -11,9 +11,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Switch } from './ui/switch';
+import { useApiFetch } from '@/hooks/useApiFetch';
+import { toast } from 'sonner';
+import { Loader } from 'lucide-react';
 
 const DrawerComponent = ({ children }: { children: React.ReactNode }) => {
    const [open, setOpen] = useState(false);
+
+   const { data, error, loading: submitLoading, fetchAPI } = useApiFetch();
 
    const form = useForm<z.infer<typeof accountSchema>>({
       resolver: zodResolver(accountSchema),
@@ -25,11 +30,21 @@ const DrawerComponent = ({ children }: { children: React.ReactNode }) => {
       },
    });
 
-   function onSubmit(values: z.infer<typeof accountSchema>) {
-      // Do something with the form values.
-      // ✅ This will be type-safe and validated.
+   async function onSubmit(values: z.infer<typeof accountSchema>) {
+      const response = await fetchAPI('/api/account', {
+         method: 'POST',
+         data: values,
+      });
+
+      if (data) {
+         toast.success('Account Created!');
+      }
+
+      if (error) return;
+
       setOpen(() => false);
-      console.log(values);
+      form.reset();
+      return response;
    }
 
    return (
@@ -146,7 +161,13 @@ const DrawerComponent = ({ children }: { children: React.ReactNode }) => {
                         >
                            Cancel
                         </Button>
-                        <Button type='submit'>Submit</Button>
+                        <Button
+                           type='submit'
+                           disabled={submitLoading}
+                           className='min-w-24'
+                        >
+                           {submitLoading ? <Loader className='animate-spin h-4 w-4' /> : 'Submit'}
+                        </Button>
                      </div>
                   </form>
                </Form>
