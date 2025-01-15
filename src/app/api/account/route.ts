@@ -93,6 +93,10 @@ export async function GET() {
          },
       });
 
+      if (!userAccounts) {
+         return NextResponse.json({ message: 'No accounts found' }, { status: 404 });
+      }
+
       if (userAccounts.length === 0) {
          return NextResponse.json({ message: 'No accounts found' }, { status: 404 });
       }

@@ -14,11 +14,12 @@ import { Switch } from './ui/switch';
 import { useApiFetch } from '@/hooks/useApiFetch';
 import { toast } from 'sonner';
 import { Loader } from 'lucide-react';
+import { APIData } from './DashboardGrid';
 
-const DrawerComponent = ({ children }: { children: React.ReactNode }) => {
+const DrawerComponent = ({ children, fetchAccounts }: { children: React.ReactNode; fetchAccounts: () => void }) => {
    const [open, setOpen] = useState(false);
 
-   const { data, error, loading: submitLoading, fetchAPI } = useApiFetch();
+   const { data, error, loading: submitLoading, fetchAPI } = useApiFetch<APIData>();
 
    const form = useForm<z.infer<typeof accountSchema>>({
       resolver: zodResolver(accountSchema),
@@ -31,12 +32,13 @@ const DrawerComponent = ({ children }: { children: React.ReactNode }) => {
    });
 
    async function onSubmit(values: z.infer<typeof accountSchema>) {
-      const response = await fetchAPI('/api/account', {
+      await fetchAPI('/api/account', {
          method: 'POST',
          data: values,
       });
 
-      if (data) {
+      if (data?.message === 'Account created successfully') {
+         fetchAccounts();
          toast.success('Account Created!');
       }
 
@@ -44,7 +46,6 @@ const DrawerComponent = ({ children }: { children: React.ReactNode }) => {
 
       setOpen(() => false);
       form.reset();
-      return response;
    }
 
    return (
