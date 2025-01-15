@@ -16,13 +16,11 @@ export type APIData = {
 const DashboardGrid = () => {
    const { data: accountsData, fetchAPI, loading: loadingAccounts } = useApiFetch<APIData>();
 
-   const fetchAccounts = async () => {
-      await fetchAPI('/api/account', { method: 'GET' });
+   const fetchAccounts = () => {
+      fetchAPI('/api/account', { method: 'GET' });
    };
 
    useEffect(() => {
-      console.log(Math.random());
-
       fetchAccounts();
    }, []);
 
