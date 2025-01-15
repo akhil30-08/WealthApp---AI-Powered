@@ -19,7 +19,7 @@ import { APIData } from './DashboardGrid';
 const DrawerComponent = ({ children, fetchAccounts }: { children: React.ReactNode; fetchAccounts: () => void }) => {
    const [open, setOpen] = useState(false);
 
-   const { data, error, loading: submitLoading, fetchAPI } = useApiFetch<APIData>();
+   const { error, loading: submitLoading, fetchAPI } = useApiFetch<APIData>();
 
    const form = useForm<z.infer<typeof accountSchema>>({
       resolver: zodResolver(accountSchema),
@@ -32,20 +32,21 @@ const DrawerComponent = ({ children, fetchAccounts }: { children: React.ReactNod
    });
 
    async function onSubmit(values: z.infer<typeof accountSchema>) {
-      await fetchAPI('/api/account', {
+      const result = await fetchAPI('/api/account', {
          method: 'POST',
          data: values,
       });
 
-      if (data?.message === 'Account created successfully') {
+      console.log(result);
+
+      if (result?.payload) {
          fetchAccounts();
          toast.success('Account Created!');
+         form.reset();
       }
 
       if (error) return;
-
       setOpen(() => false);
-      form.reset();
    }
 
    return (
