@@ -1,8 +1,9 @@
+import { useParams } from 'next/navigation';
 import React from 'react';
 
-const page = ({ params }: { params: { id: string } }) => {
-   const { id } = params;
+const AccountPage = () => {
+   const { id } = useParams<{ id: string }>();
    return <div>{id}</div>;
 };
 
-export default page;
+export default AccountPage;
