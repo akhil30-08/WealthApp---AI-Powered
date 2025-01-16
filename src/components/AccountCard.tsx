@@ -10,13 +10,18 @@ import { Button } from './ui/button';
 import { useApiFetch } from '@/hooks/useApiFetch';
 import { toast } from 'sonner';
 import { APIData } from './DashboardGrid';
+import { useState } from 'react';
 
 export function AccountCard({ account, fetchAccounts }: { account: Account; fetchAccounts: () => void }) {
    const { name, type, balance, isDefault, id } = account;
+   const { error, fetchAPI } = useApiFetch<APIData>();
+   const [defaultAccount, setDefaultAccount] = useState<boolean>(isDefault);
 
-   const { loading, error, fetchAPI } = useApiFetch<APIData>();
+   const [loadingDelete, setLoadingDelete] = useState<boolean>(false);
+   const [loadingToggle, setLoadingToggle] = useState<boolean>(false);
 
    const handleDeleteAccount = async (e: React.FormEvent<HTMLElement>, accountId: string) => {
+      setLoadingDelete(true);
       e.preventDefault();
       const result = await fetchAPI('/api/account', { method: 'DELETE', data: { id: accountId } });
 
@@ -25,6 +30,20 @@ export function AccountCard({ account, fetchAccounts }: { account: Account; fetc
          fetchAccounts();
          toast.success(result?.message);
       }
+      setLoadingDelete(false);
+   };
+
+   const toggleDefaultAccount = async (e: React.FormEvent<HTMLElement>) => {
+      setLoadingToggle(true);
+      e.preventDefault();
+      setDefaultAccount(!defaultAccount);
+
+      const result = await fetchAPI(`/api/account/${id}`, {
+         method: 'PUT',
+      });
+
+      setLoadingToggle(false);
+      return result;
    };
 
    return (
@@ -32,7 +51,13 @@ export function AccountCard({ account, fetchAccounts }: { account: Account; fetc
          <Link href={`/account/${id}`}>
             <CardHeader className='flex flex-row items-center justify-between pb-2'>
                <CardTitle className='text-sm font-medium capitalize '>{name}</CardTitle>
-               <Switch checked={isDefault} />
+               <Switch
+                  checked={defaultAccount}
+                  onClick={(e) => toggleDefaultAccount(e)}
+                  disabled={loadingToggle}
+               >
+                  {loadingToggle ? <Loader className='w-3 h-3 animate-spin' /> : ''}
+               </Switch>
             </CardHeader>
             <CardContent>
                <div className='text-xl font-bold'>$ {balance.toString()}</div>
@@ -55,9 +80,9 @@ export function AccountCard({ account, fetchAccounts }: { account: Account; fetc
             size={'sm'}
             type='button'
             onClick={(e) => handleDeleteAccount(e, id)}
-            disabled={loading}
+            disabled={loadingDelete}
          >
-            {loading ? <Loader className='w-3 h-3 animate-spin' /> : <TrashIcon />}
+            {loadingDelete ? <Loader className='w-3 h-3 animate-spin' /> : <TrashIcon />}
          </Button>
       </Card>
    );
