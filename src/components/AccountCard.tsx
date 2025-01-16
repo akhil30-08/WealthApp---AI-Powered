@@ -1,14 +1,32 @@
 'use client';
 
-import { ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { ArrowUpRight, ArrowDownRight, TrashIcon, Loader } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
 import { Account } from '@prisma/client';
+import { Button } from './ui/button';
+import { useApiFetch } from '@/hooks/useApiFetch';
+import { toast } from 'sonner';
+import { APIData } from './DashboardGrid';
 
-export function AccountCard({ account }: { account: Account }) {
+export function AccountCard({ account, fetchAccounts }: { account: Account; fetchAccounts: () => void }) {
    const { name, type, balance, isDefault, id } = account;
+
+   const { loading, error, fetchAPI } = useApiFetch<APIData>();
+
+   const handleDeleteAccount = async (e: React.FormEvent<HTMLElement>, accountId: string) => {
+      e.preventDefault();
+      const result = await fetchAPI('/api/account', { method: 'DELETE', data: { id: accountId } });
+
+      if (error) return;
+      if (result?.message) {
+         fetchAccounts();
+         toast.success(result?.message);
+      }
+   };
+
    return (
       <Card className='hover:shadow-md transition-shadow group relative p-2 '>
          <Link href={`/account/${id}`}>
@@ -31,6 +49,16 @@ export function AccountCard({ account }: { account: Account }) {
                </div>
             </CardFooter>
          </Link>
+         <Button
+            variant={'destructive'}
+            className='relative top-5 mx-auto flex rounded-lg '
+            size={'sm'}
+            type='button'
+            onClick={(e) => handleDeleteAccount(e, id)}
+            disabled={loading}
+         >
+            {loading ? <Loader className='w-3 h-3 animate-spin' /> : <TrashIcon />}
+         </Button>
       </Card>
    );
 }

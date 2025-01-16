@@ -107,3 +107,38 @@ export async function GET() {
       return NextResponse.json({ message: error }, { status: 400 });
    }
 }
+
+export async function DELETE(request: NextRequest) {
+   const { id } = await request.json();
+   try {
+      const { userId } = await auth();
+      if (!userId) {
+         return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+      }
+
+      const account = await prisma.account.findUnique({
+         where: {
+            id: id,
+         },
+      });
+
+      if (!account) {
+         return NextResponse.json({ message: "This account doesn't exist" }, { status: 400 });
+      }
+
+      if (account.isDefault) {
+         return NextResponse.json({ message: "Can't delete a default account" }, { status: 400 });
+      }
+
+      await prisma.account.delete({
+         where: {
+            id: id,
+         },
+      });
+
+      return NextResponse.json({ message: 'Account Deleted' }, { status: 200 });
+   } catch (error) {
+      console.log(error);
+      return NextResponse.json({ message: error }, { status: 400 });
+   }
+}

@@ -25,7 +25,7 @@ const DashboardGrid = () => {
    }, []);
 
    return (
-      <section className='my-2 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 '>
+      <section className='my-2 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 max-sm:px-2 '>
          <DrawerComponent fetchAccounts={fetchAccounts}>
             <Card className='hover:shadow-md border-dashed min-w-full p-2 relative'>
                <CardContent className='space-y-4'>
@@ -54,6 +54,7 @@ const DashboardGrid = () => {
             <AccountCard
                key={account.id}
                account={account}
+               fetchAccounts={fetchAccounts}
             />
          ))}
       </section>
