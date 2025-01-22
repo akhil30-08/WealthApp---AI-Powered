@@ -11,14 +11,19 @@ import { useApiFetch } from '@/hooks/useApiFetch';
 import { toast } from 'sonner';
 import { APIData } from './DashboardGrid';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export function AccountCard({ account, fetchAccounts }: { account: Account; fetchAccounts: () => void }) {
    const { name, type, balance, isDefault, id } = account;
    const { error, fetchAPI } = useApiFetch<APIData>();
-   const [defaultAccount, setDefaultAccount] = useState<boolean>(isDefault);
+
+   // const [defaultAccount, setDefaultAccount] = useState<boolean>(isDefault);
+   // console.log(defaultAccount + name);
 
    const [loadingDelete, setLoadingDelete] = useState<boolean>(false);
    const [loadingToggle, setLoadingToggle] = useState<boolean>(false);
+
+   const router = useRouter();
 
    const handleDeleteAccount = async (e: React.FormEvent<HTMLElement>, accountId: string) => {
       setLoadingDelete(true);
@@ -36,11 +41,14 @@ export function AccountCard({ account, fetchAccounts }: { account: Account; fetc
    const toggleDefaultAccount = async (e: React.FormEvent<HTMLElement>) => {
       setLoadingToggle(true);
       e.preventDefault();
-      setDefaultAccount(!defaultAccount);
 
       const result = await fetchAPI(`/api/account/${id}`, {
          method: 'PUT',
       });
+      if (result?.message) {
+         await fetchAccounts();
+         router.refresh();
+      }
 
       setLoadingToggle(false);
       return result;
@@ -52,7 +60,7 @@ export function AccountCard({ account, fetchAccounts }: { account: Account; fetc
             <CardHeader className='flex flex-row items-center justify-between pb-2'>
                <CardTitle className='text-sm font-medium capitalize '>{name}</CardTitle>
                <Switch
-                  checked={defaultAccount}
+                  checked={isDefault}
                   onClick={(e) => toggleDefaultAccount(e)}
                   disabled={loadingToggle}
                >

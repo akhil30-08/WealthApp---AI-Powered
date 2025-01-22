@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import DrawerComponent from './DrawerComponent';
 import { Card, CardContent } from './ui/card';
 import { Plus } from 'lucide-react';
@@ -16,13 +16,22 @@ export type APIData = {
 const DashboardGrid = () => {
    const { data: accountsData, fetchAPI, loading: loadingAccounts } = useApiFetch<APIData>();
 
-   const fetchAccounts = () => {
-      fetchAPI('/api/account', { method: 'GET' });
-   };
+   const fetchAccounts = useCallback(async () => {
+      try {
+         console.log('callback running');
+
+         await fetchAPI('/api/account', { method: 'GET' });
+      } catch (error) {
+         console.log('Error happened in callback' + error);
+      }
+   }, []);
 
    useEffect(() => {
       fetchAccounts();
-   }, []);
+      console.log('useeffect running' + Math.random());
+   }, [fetchAccounts]);
+
+   console.log(accountsData);
 
    return (
       <section className='my-2 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 max-sm:px-2 '>
