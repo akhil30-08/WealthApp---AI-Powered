@@ -35,6 +35,8 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       return NextResponse.json({ message: 'Account updated' }, { status: 200 });
    } catch (error) {
       console.log(error);
+      console.log('wow');
+
       return NextResponse.json({ message: error }, { status: 400 });
    }
 }
