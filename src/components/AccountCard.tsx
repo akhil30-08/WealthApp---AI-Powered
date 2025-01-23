@@ -17,9 +17,6 @@ export function AccountCard({ account, fetchAccounts }: { account: Account; fetc
    const { name, type, balance, isDefault, id } = account;
    const { error, fetchAPI } = useApiFetch<APIData>();
 
-   // const [defaultAccount, setDefaultAccount] = useState<boolean>(isDefault);
-   // console.log(defaultAccount + name);
-
    const [loadingDelete, setLoadingDelete] = useState<boolean>(false);
    const [loadingToggle, setLoadingToggle] = useState<boolean>(false);
 
@@ -39,19 +36,26 @@ export function AccountCard({ account, fetchAccounts }: { account: Account; fetc
    };
 
    const toggleDefaultAccount = async (e: React.FormEvent<HTMLElement>) => {
-      setLoadingToggle(true);
-      e.preventDefault();
+      try {
+         setLoadingToggle(true);
+         e.preventDefault();
 
-      const result = await fetchAPI(`/api/account/${id}`, {
-         method: 'PUT',
-      });
-      if (result?.message) {
-         await fetchAccounts();
-         router.refresh();
+         if (isDefault) {
+            return toast.error('Need atleast 1 default account');
+         }
+
+         const result = await fetchAPI(`/api/account/${id}`, {
+            method: 'PUT',
+         });
+         if (result?.message) {
+            await fetchAccounts();
+            router.refresh();
+         }
+      } catch (error) {
+         console.log(error);
+      } finally {
+         setLoadingToggle(false);
       }
-
-      setLoadingToggle(false);
-      return result;
    };
 
    return (

@@ -96,6 +96,7 @@ const DrawerComponent = ({ children, fetchAccounts }: { children: React.ReactNod
                                  <Input
                                     placeholder='15.50'
                                     type='number'
+                                    className='placeholder:text-lg'
                                     step={0.01}
                                     {...field}
                                  />
@@ -148,6 +149,7 @@ const DrawerComponent = ({ children, fetchAccounts }: { children: React.ReactNod
                                  <Switch
                                     checked={field.value}
                                     onCheckedChange={field.onChange}
+                                    className='data-[state=checked]:bg-green-800/75'
                                  />
                               </FormControl>
                               <FormMessage />

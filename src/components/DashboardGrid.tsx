@@ -18,8 +18,6 @@ const DashboardGrid = () => {
 
    const fetchAccounts = useCallback(async () => {
       try {
-         console.log('callback running');
-
          await fetchAPI('/api/account', { method: 'GET' });
       } catch (error) {
          console.log('Error happened in callback' + error);
@@ -28,10 +26,7 @@ const DashboardGrid = () => {
 
    useEffect(() => {
       fetchAccounts();
-      console.log('useeffect running' + Math.random());
    }, [fetchAccounts]);
-
-   console.log(accountsData);
 
    return (
       <section className='my-2 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 max-sm:px-2 '>
