@@ -58,3 +58,51 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ message: error }, { status: 400 });
    }
 }
+
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+   const { id } = await params;
+
+   try {
+      const { userId } = await auth();
+      if (!userId) {
+         return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+      }
+
+      const user = await prisma.user.findUnique({
+         where: {
+            clerkUserId: userId,
+         },
+      });
+
+      if (!user) {
+         return NextResponse.json({ message: 'User not found' }, { status: 401 });
+      }
+
+      //now get account details
+      const account = await prisma.account.findUnique({
+         where: {
+            userId: user?.id,
+            id,
+         },
+         include: {
+            transactions: {
+               orderBy: { date: 'desc' },
+            },
+            _count: {
+               select: {
+                  transactions: true,
+               },
+            },
+         },
+      });
+
+      if (!account) {
+         return NextResponse.json({ message: "This account doesn't exist" }, { status: 400 });
+      }
+
+      return NextResponse.json({ message: 'Account found', account }, { status: 200 });
+   } catch (error) {
+      console.log(error);
+      return NextResponse.json({ message: error }, { status: 400 });
+   }
+}

@@ -23,3 +23,8 @@ export type ITestimonialsData = {
    image: string;
    quote: string;
 };
+
+export type ISort = {
+   order: 'asc' | 'desc';
+   key: 'date' | 'category' | 'amount';
+};

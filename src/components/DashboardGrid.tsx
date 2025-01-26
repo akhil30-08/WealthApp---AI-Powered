@@ -5,12 +5,20 @@ import { Card, CardContent } from './ui/card';
 import { Plus } from 'lucide-react';
 import { AccountCard } from './AccountCard';
 import { useApiFetch } from '@/hooks/useApiFetch';
-import { Account } from '@prisma/client';
+import { Account, Transaction } from '@prisma/client';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export type APIData = {
    message: string;
    payload?: Account[] | null;
+   account?:
+      | (Account & {
+           _count?: {
+              transactions: number;
+           };
+           transactions?: Transaction[];
+        })
+      | null;
 };
 
 const DashboardGrid = () => {
