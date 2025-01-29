@@ -91,9 +91,9 @@ const HeroSection = () => {
                   >
                      <CardContent>
                         {<feature.icon className='w-5 h-5 text-blue-600' />}
-                        <p className='text-[0.4px] md:text-lg font-semibold my-1'>{feature.title}</p>
+                        <p className='text-sm md:text-lg font-semibold my-1'>{feature.title}</p>
 
-                        <p className='text-[0.1px] md:text-sm text-gray-600'>{feature.description}</p>
+                        <p className='text-xs md:text-sm text-gray-600'>{feature.description}</p>
                      </CardContent>
                   </Card>
                ))}
