@@ -1,5 +1,6 @@
 'use client';
 
+import AccountChart from '@/components/AccountChart';
 import { APIData } from '@/components/DashboardGrid';
 import TransactionTable from '@/components/TransactionTable';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -20,6 +21,8 @@ const AccountPage = () => {
 
       getAccount();
    }, [id]);
+
+   console.log(accountData);
 
    return (
       <section className='space-y-8'>
@@ -46,11 +49,12 @@ const AccountPage = () => {
                   </div>
 
                   <div className='text-right pb-2'>
-                     <div className='text-xl sm:text-2xl font-bold'>${accountData?.account?.balance.toString()}</div>
+                     <div className='text-xl sm:text-2xl font-bold'>${Number(accountData?.account?.balance).toFixed(3)}</div>
                      <p className='text-sm text-muted-foreground'>{accountData?.account?._count?.transactions} Transactions</p>
                   </div>
                </div>
                {/* chart section} */}
+               <AccountChart transactions={accountData?.account?.transactions} />
                <TransactionTable transactions={accountData?.account?.transactions ?? []} />
             </>
          )}

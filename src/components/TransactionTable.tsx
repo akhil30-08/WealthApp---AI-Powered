@@ -20,6 +20,10 @@ import { Button } from './ui/button';
 import { ISort } from '@/types';
 import { Input } from './ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { useDebounce } from '@/hooks/useDebounce';
+import { useApiFetch } from '@/hooks/useApiFetch';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import PaginationComponent from './PaginationComponent';
 
 const TransactionTable = ({ transactions }: { transactions: Transaction[] }) => {
    const [selectTxn, setSelectTxn] = useState<string[]>([]);
@@ -31,14 +35,17 @@ const TransactionTable = ({ transactions }: { transactions: Transaction[] }) => 
    const [searchType, setSearchType] = useState('');
    const [searchRecurring, setSearchRecurring] = useState('');
 
-   const filteredAndSortedTxns = useMemo(() => {
-      console.log('use memo running');
+   const { fetchAPI } = useApiFetch();
 
+   //get the debounced value
+   const debouncedSearch = useDebounce(searchTxn, 1500);
+
+   const filteredAndSortedTxns = useMemo(() => {
       let result = [...transactions];
 
       //search by transaction description
-      if (searchTxn) {
-         result = result.filter((txn) => txn.description?.toLowerCase().includes(searchTxn.toLowerCase()));
+      if (debouncedSearch) {
+         result = result.filter((txn) => txn.description?.toLowerCase().includes(debouncedSearch.toLowerCase()));
       }
 
       //search by transaction type
@@ -72,7 +79,7 @@ const TransactionTable = ({ transactions }: { transactions: Transaction[] }) => 
       });
 
       return result;
-   }, [transactions, searchTxn, searchType, searchRecurring, sortType]);
+   }, [transactions, debouncedSearch, searchType, searchRecurring, sortType]);
 
    const handleSelectTxn = (txnId: string) => {
       return selectTxn.includes(txnId) ? setSelectTxn(selectTxn.filter((id) => id !== txnId)) : setSelectTxn([...selectTxn, txnId]);
@@ -90,7 +97,25 @@ const TransactionTable = ({ transactions }: { transactions: Transaction[] }) => 
       }));
    };
 
-   console.log(filteredAndSortedTxns);
+   const handleDeleteTransactions = async (deleteIds: string[]) => {
+      return await fetchAPI('/api/transactions', {
+         method: 'DELETE',
+         data: {
+            transactionId: deleteIds,
+         },
+      });
+   };
+
+   //pagination logic here
+   const pageSize = 10; // Number of transactions per page
+   const totalPages = Math.ceil(filteredAndSortedTxns.length / pageSize);
+
+   const [currentPage, setCurrentPage] = useState<number>(1);
+
+   const startIndex = (currentPage - 1) * pageSize;
+   const endIndex = startIndex + pageSize;
+
+   const paginatedTxns = filteredAndSortedTxns.slice(startIndex, endIndex);
 
    return (
       <section>
@@ -136,7 +161,32 @@ const TransactionTable = ({ transactions }: { transactions: Transaction[] }) => 
                   </SelectContent>
                </Select>
 
-               {selectTxn.length > 0 && <Button variant={'destructive'}>Delete ({selectTxn.length})</Button>}
+               {selectTxn.length > 0 && (
+                  <Dialog>
+                     <DialogTrigger asChild>
+                        <Button variant={'destructive'}>Delete</Button>
+                     </DialogTrigger>
+                     <DialogContent>
+                        <DialogHeader>
+                           <DialogTitle>Are you absolutely sure?</DialogTitle>
+                           <DialogDescription>
+                              This action cannot be undone. This will permanently delete your selected {selectTxn.length} transactions.
+                           </DialogDescription>
+                        </DialogHeader>
+
+                        <DialogFooter className='sm:justify-start'>
+                           <DialogClose asChild>
+                              <Button
+                                 variant={'destructive'}
+                                 onClick={() => handleDeleteTransactions(selectTxn)}
+                              >
+                                 Delete ({selectTxn.length})
+                              </Button>
+                           </DialogClose>
+                        </DialogFooter>
+                     </DialogContent>
+                  </Dialog>
+               )}
 
                {(searchType || searchRecurring) && (
                   <Button
@@ -152,7 +202,6 @@ const TransactionTable = ({ transactions }: { transactions: Transaction[] }) => 
                )}
             </div>
          </div>
-
          {/* table section */}
          <Table>
             <TableCaption>A list of your transactions</TableCaption>
@@ -233,7 +282,7 @@ const TransactionTable = ({ transactions }: { transactions: Transaction[] }) => 
                   </TableRow>
                )}
 
-               {filteredAndSortedTxns?.map((transaction) => {
+               {paginatedTxns?.map((transaction) => {
                   return (
                      <TableRow key={transaction.id}>
                         <TableCell>
@@ -309,6 +358,12 @@ const TransactionTable = ({ transactions }: { transactions: Transaction[] }) => 
                })}
             </TableBody>
          </Table>
+         {/* pagination section */}
+         <PaginationComponent
+            currentPage={currentPage}
+            totalPages={totalPages}
+            setCurrentPage={setCurrentPage}
+         />
       </section>
    );
 };
