@@ -54,7 +54,7 @@ const AccountPage = () => {
                   </div>
                </div>
                {/* chart section} */}
-               <AccountChart transactions={accountData?.account?.transactions} />
+               <AccountChart transactions={accountData?.account?.transactions ?? []} />
                <TransactionTable transactions={accountData?.account?.transactions ?? []} />
             </>
          )}
