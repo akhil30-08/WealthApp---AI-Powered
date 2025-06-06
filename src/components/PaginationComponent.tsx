@@ -70,8 +70,6 @@ const PaginationComponent = ({ currentPage, totalPages, setCurrentPage }: Pagina
       return items;
    };
 
-   console.log(currentPage);
-
    return (
       <Pagination>
          <PaginationContent>
