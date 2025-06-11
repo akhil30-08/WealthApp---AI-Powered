@@ -11,7 +11,8 @@ import { Progress } from './ui/progress';
 import { Skeleton } from './ui/skeleton';
 
 const BudgetSection = ({ defaultAccount }: { defaultAccount: Account }) => {
-   const { fetchAPI, loading: isBudgetLoading } = useApiFetch<IBudgetData>();
+   //TODO add loading isBudgetLoading
+   const { fetchAPI } = useApiFetch<IBudgetData>();
 
    const [setBudget, setSetBudget] = useState<boolean>(false);
    const [budgetAmount, setBudgetAmount] = useState<number>(1);
