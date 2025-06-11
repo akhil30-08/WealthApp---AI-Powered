@@ -72,7 +72,7 @@ export function AccountCard({ account, fetchAccounts }: { account: Account; fetc
                </Switch>
             </CardHeader>
             <CardContent>
-               <div className='text-xl font-bold'>$ {balance.toString()}</div>
+               <div className='text-xl font-bold'>$ {Number(balance).toFixed(3)}</div>
                <p className='text-muted-foreground text-xs'>{type.charAt(0) + type.slice(1).toLocaleLowerCase()} Account</p>
             </CardContent>
             <CardFooter className='flex justify-between text-sm text-muted-foreground mt-3'>

@@ -1,3 +1,4 @@
+import { Budget } from '@prisma/client';
 import type { LucideIcon } from 'lucide-react';
 
 export type IStatsData = {
@@ -27,4 +28,14 @@ export type ITestimonialsData = {
 export type ISort = {
    order: 'asc' | 'desc';
    key: 'date' | 'category' | 'amount';
+};
+
+export type IBudgetData = {
+   message: string;
+   expenseDetails?: {
+      _sum: {
+         amount: string;
+      };
+   };
+   budgetDetails: Budget | null;
 };
