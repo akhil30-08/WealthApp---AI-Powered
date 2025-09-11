@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# WealthApp - AI-Powered Finance Management
 
-## Getting Started
+WealthApp is a modern financial management application built with Next.js 14, featuring AI-powered insights to help users better manage their wealth and track their financial journey.
 
-First, run the development server:
+## 🌟 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Account Management**
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+   - Create and manage multiple financial accounts
+   - Track account balances in real-time
+   - View detailed transaction history
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Transaction Tracking**
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+   - Record income and expenses
+   - Categorize transactions
+   - Filter and sort transactions
+   - Detailed transaction analytics
 
-## Learn More
+- **Budget Management**
 
-To learn more about Next.js, take a look at the following resources:
+   - Set monthly budgets
+   - Track spending against budgets
+   - Receive budget alerts
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Analytics & Insights**
+   - Visual charts and graphs
+   - Income vs. Expense analysis
+   - Category-wise spending breakdown
+   - Historical trend analysis
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🛠️ Technology Stack
 
-## Deploy on Vercel
+- **Frontend:**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   - Next.js 14
+   - React
+   - TypeScript
+   - Tailwind CSS
+   - shadcn/ui Components
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Backend:**
+
+   - Next.js API Routes
+   - Prisma ORM
+   - PostgreSQL Database
+
+- **Authentication:**
+
+   - Clerk Authentication
+
+- **Deployment:**
+   - Vercel
+
+## 🚀 Getting Started
+
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/akhil30-08/WealthApp---AI-Powered.git
+   cd WealthApp---AI-Powered
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+   Create a `.env` file in the root directory and add:
+
+   ```env
+   DATABASE_URL="your-postgresql-url"
+   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="your-clerk-publishable-key"
+   CLERK_SECRET_KEY="your-clerk-secret-key"
+   ```
+
+4. **Set up the database**
+
+   ```bash
+   npx prisma generate
+   npx prisma db push
+   ```
+
+5. **Run the development server**
+
+   ```bash
+   npm run dev
+   ```
+
+6. Open [http://localhost:3000](http://localhost:3000) in your browser
