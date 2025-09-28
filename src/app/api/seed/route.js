@@ -28,11 +28,11 @@ export async function GET() {
       ],
    };
 
-   function getRandomAmount(min: number, max: number) {
+   function getRandomAmount(min, max) {
       return Number((Math.random() * (max - min) + min).toFixed(2));
    }
 
-   function getRandomCategory(type: 'INCOME' | 'EXPENSE') {
+   function getRandomCategory(type) {
       const categories = CATEGORIES[type];
       const category = categories[Math.floor(Math.random() * categories.length)];
       const amount = getRandomAmount(category.range[0], category.range[1]);
