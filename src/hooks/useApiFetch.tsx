@@ -17,7 +17,8 @@ export const useApiFetch = <T,>() => {
       } catch (error) {
          if (axios.isAxiosError(error)) {
             setError(error);
-            toast.error(error?.response?.data?.message || 'An API error occurred');
+            const msg = error.response?.data?.message;
+            toast.error(typeof msg === 'string' ? msg : 'An API error occurred');
          } else if (error instanceof Error) {
             setError(error);
             toast.error(error.message || 'An unexpected error occurred');

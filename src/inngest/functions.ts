@@ -1,7 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { inngest } from './client';
 import { endOfMonth, startOfMonth } from 'date-fns';
-import axios from 'axios';
 
 export const checkBudgetAlert = inngest.createFunction({ id: 'Create Budget Alerts' }, { cron: '0 */6 * * *' }, async ({ step }) => {
    await step.sleep('wait-a-moment', '1s');
@@ -47,47 +46,62 @@ export const checkBudgetAlert = inngest.createFunction({ id: 'Create Budget Aler
                amount: true,
             },
          });
+
          const totalExpense = parseFloat((expenses?._sum?.amount ?? 0).toString());
+         console.log({ totalExpense });
 
          const budgetAmount = parseFloat(budget?.amount);
-
          const percentage = (totalExpense / budgetAmount) * 100;
 
-         if (percentage >= 80 && (!budget?.lastAlertSent || isnewMonth(new Date(budget?.lastAlertSent)))) {
-            // send Email
+         if (percentage >= 80 && (!budget?.lastAlertSent || isNewMonth(new Date(budget?.lastAlertSent)))) {
+            // Construct the correct API URL
+            const baseUrl = 'http://localhost:3000';
 
-            const BASE_URI = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000/api/sendBudgetAlert';
+            const apiUrl = `${baseUrl}/api/sendBudgetAlert`;
 
-            const result = await axios(`${BASE_URI}`, {
-               method: 'POST',
+            await step.run(`send-alert-${budget.id}`, async () => {
+               try {
+                  console.log(`Sending alert to: ${apiUrl}`);
 
-               data: {
-                  userName: budget?.user?.name || '',
-                  type: 'budget-alert',
-                  data: {
-                     percentageUsed: percentage,
-                     budgetAmount,
-                     totalExpenses: totalExpense,
-                  },
-               },
-            });
+                  const response = await step.fetch(apiUrl, {
+                     method: 'POST',
+                     headers: {
+                        'Content-Type': 'application/json',
+                     },
+                     body: JSON.stringify({
+                        percentageUsed: percentage,
+                        budgetAmount,
+                        totalExpenses: totalExpense,
+                     }),
+                  });
 
-            console.log(result);
+                  if (!response.ok) {
+                     throw new Error(`HTTP error! status: ${response.status}`);
+                  }
 
-            //update Last Alert Sent
-            await prisma.budget.update({
-               where: {
-                  id: budget?.id,
-               },
-               data: {
-                  lastAlertSent: new Date(),
-               },
+                  const resultData = await response.json();
+                  console.log('API Response:', resultData);
+
+                  // Update lastAlertSent after successful API call
+                  await prisma.budget.update({
+                     where: { id: budget.id },
+                     data: { lastAlertSent: new Date() },
+                  });
+
+                  console.log(`Budget alert sent successfully for budget ${budget.id}`);
+               } catch (error) {
+                  console.error(`Failed to send budget alert for budget ${budget.id}:`, error);
+                  // Don't update lastAlertSent if the API call failed
+                  throw error; // Re-throw to let Inngest handle retry logic
+               }
             });
          }
       });
    }
 });
 
-const isnewMonth = (lastAlertDate: Date) => {
-   return lastAlertDate.getMonth !== new Date().getMonth || lastAlertDate.getFullYear !== new Date().getFullYear;
+// Fixed function name and logic
+const isNewMonth = (lastAlertDate: Date): boolean => {
+   const currentDate = new Date();
+   return lastAlertDate.getMonth() !== currentDate.getMonth() || lastAlertDate.getFullYear() !== currentDate.getFullYear();
 };

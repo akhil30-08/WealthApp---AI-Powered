@@ -31,7 +31,7 @@ const Header = () => {
                      </Button>
                   </Link>
 
-                  <Link href='/transaction'>
+                  <Link href='/transaction/create'>
                      <Button>
                         <PenBox />
                         <span className='hidden md:inline'>Add Transaction</span>

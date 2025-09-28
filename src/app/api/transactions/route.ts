@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
+import { calculateNextRecurringDate } from '@/lib/utils';
 
 //TODO check it later on after adding transactions manually
 
@@ -75,5 +76,77 @@ export async function DELETE(request: NextRequest) {
    } catch (error) {
       console.log(error);
       return NextResponse.json({ message: error }, { status: 400 });
+   }
+}
+
+export async function POST(request: NextRequest) {
+   try {
+      const { amount, type, description, isRecurring, date, accountId, category, recurringInterval } = await request.json();
+
+      const { userId } = await auth();
+      if (!userId) {
+         return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+      }
+
+      const user = await prisma.user.findUnique({
+         where: {
+            clerkUserId: userId,
+         },
+      });
+
+      if (!user) {
+         return NextResponse.json({ message: 'User not found' }, { status: 401 });
+      }
+
+      const account = await prisma.account.findUnique({
+         where: {
+            id: accountId,
+            userId: user.id,
+         },
+      });
+
+      if (!account) {
+         return NextResponse.json({ message: 'Account not found' }, { status: 400 });
+      }
+
+      let balanceofAccount: number = Number(account?.balance) || 0;
+      if (type === 'EXPENSE') {
+         balanceofAccount -= Number(amount);
+      } else {
+         balanceofAccount += Number(amount);
+      }
+
+      const result = await prisma.$transaction(async (tx) => {
+         const newTransaction = await tx.transaction.create({
+            data: {
+               amount: Number(amount),
+               category,
+               type,
+               description,
+               isRecurring,
+               date,
+               userId: user.id,
+               accountId,
+               recurringInterval: isRecurring ? recurringInterval : null,
+               nextRecurringDate: isRecurring && recurringInterval ? calculateNextRecurringDate(date, recurringInterval) : null,
+            },
+         });
+
+         await tx.account.update({
+            where: {
+               id: accountId,
+            },
+            data: {
+               balance: balanceofAccount,
+            },
+         });
+
+         return newTransaction;
+      });
+
+      return NextResponse.json({ message: 'Transaction Created Succesfully', payload: result }, { status: 200 });
+   } catch (error) {
+      console.log(error);
+      NextResponse.json({ message: error }, { status: 400 });
    }
 }

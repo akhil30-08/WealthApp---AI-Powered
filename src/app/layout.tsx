@@ -22,7 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                <Header />
                <main>{children}</main>
                {/* ///TODO check this later because it is glitchy */}
-               <Toaster richColors />
+               <Toaster />
             </body>
          </html>
       </ClerkProvider>

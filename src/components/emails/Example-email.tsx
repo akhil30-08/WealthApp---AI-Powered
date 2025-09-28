@@ -1,14 +1,20 @@
 import { Body, Container, Head, Heading, Html, Preview, Section, Text } from '@react-email/components';
 
+type EmailTemplateProps = {
+   userName?: string;
+   type?: 'budget-alert';
+   data?: {
+      percentageUsed: number;
+      budgetAmount: number;
+      totalExpenses: number;
+   };
+};
+
 const EmailTemplate = ({
-   userName = 'Akhil',
+   userName = '',
    type = 'budget-alert',
-   data = {
-      percentageUsed: 80,
-      budgetAmount: 4000,
-      totalExpenses: 3487,
-   },
-}) => {
+   data = { percentageUsed: 85, budgetAmount: 10000, totalExpenses: 8500 },
+}: EmailTemplateProps) => {
    if (type === 'budget-alert') {
       return (
          <Html>
