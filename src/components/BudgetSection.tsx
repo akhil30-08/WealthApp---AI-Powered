@@ -101,7 +101,7 @@ const BudgetSection = ({ defaultAccount }: { defaultAccount: Account }) => {
                      <div className='w-full flex flex-col items-center gap-2'>
                         {isBudgetUpdateLoading ? (
                            <>
-                              <Skeleton className='h-10 w-full rounded-lg shadow-sm' />
+                              <Skeleton className='h-10 w-full rounded-lg shadow-xs' />
                            </>
                         ) : (
                            <>

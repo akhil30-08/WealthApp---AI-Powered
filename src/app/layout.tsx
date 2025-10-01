@@ -4,6 +4,7 @@ import './globals.css';
 import { ClerkProvider } from '@clerk/nextjs';
 import Header from '@/components/Header';
 import { Toaster } from '@/components/ui/sonner';
+import NextTopLoader from 'nextjs-toploader';
 
 const inter = Inter({
    subsets: ['latin'],
@@ -19,6 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <ClerkProvider>
          <html lang='en'>
             <body className={inter.className}>
+               <NextTopLoader />
                <Header />
                <main>{children}</main>
                {/* ///TODO check this later because it is glitchy */}

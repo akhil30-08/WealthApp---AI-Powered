@@ -132,7 +132,7 @@ const CreateTxnForm = ({ accountsData, categories }: TransactionFormProps) => {
                      name='accountId'
                      render={({ field }) => (
                         <FormItem>
-                           <FormLabel>Amount</FormLabel>
+                           <FormLabel>Account</FormLabel>
 
                            <Select
                               defaultValue={field.value}
