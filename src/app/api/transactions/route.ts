@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { calculateNextRecurringDate } from '@/lib/utils';
+import { request as arcjetRequest } from '@arcjet/next';
+import { aj } from '@/lib/arcjet';
 
 //TODO check it later on after adding transactions manually
 
@@ -86,6 +88,20 @@ export async function POST(request: NextRequest) {
       const { userId } = await auth();
       if (!userId) {
          return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+      }
+
+      //ArcJet
+      const arcRequest = await arcjetRequest();
+      const decision = await aj.protect(arcRequest, {
+         userId,
+         requested: 2,
+      });
+
+      if (decision.isDenied()) {
+         if (decision.reason.isRateLimit()) {
+            return NextResponse.json({ message: 'Too many requests' }, { status: 429 });
+         }
+         return NextResponse.json({ message: 'Request blocked' }, { status: 403 });
       }
 
       const user = await prisma.user.findUnique({

@@ -20,7 +20,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <ClerkProvider>
          <html lang='en'>
             <body className={inter.className}>
-               <NextTopLoader />
+               <NextTopLoader showSpinner={false} />
+
                <Header />
                <main>{children}</main>
                {/* ///TODO check this later because it is glitchy */}
